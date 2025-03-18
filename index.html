@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newly Arrival Immigrant Program</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.5;
+            color: #374151;
+        }
+
+        .container {
+            padding: 1.5rem;
+            background-color: #F9FAFB;
+            min-height: 100vh;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-content {
+            flex: 1;
+        }
+
+        .header h1 {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #6B7280;
+        }
+
+        .week-selector {
+            min-width: 200px;
+        }
+
+        .week-selector select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #D1D5DB;
+            background-color: white;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .chart-container {
+            height: 320px;
+            width: 100%;
+            position: relative;
+        }
+
+        .insight-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: #EFF6FF;
+        }
+
+        .insight-box h4 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-box p {
+            font-size: 0.875rem;
+            color: #4B5563;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .summary-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .summary-box {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: #EFF6FF;
+        }
+
+        .summary-box h4 {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-box p {
+            font-size: 0.875rem;
+            color: #4B5563;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-content">
+                <h1>Newly Arrival Immigrant Program</h1>
+                <p>Analysis of participant demographics and program goals</p>
+            </div>
+            <div class="week-selector">
+                <select id="weekSelect" onchange="updateDashboard()">
+                    <option value="1">Week 1</option>
+                    <option value="2">Week 2</option>
+                    <option value="3">Week 3</option>
+                    <option value="4">Week 4</option>
+                    <option value="5">Week 5</option>
+                    <option value="6">Week 6</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <!-- Gender Distribution -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Participant Gender Distribution</h2>
+                </div>
+                <div class="card-content">
+                    <div class="chart-container">
+                        <canvas id="genderChart"></canvas>
+                    </div>
+                    <div class="insight-box">
+                        <h4>Key Insight:</h4>
+                        <p>Female participants make up the majority (72.7%) of attendees, suggesting stronger engagement from women in the immigrant community.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Age Distribution -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Age Group Distribution</h2>
+                </div>
+                <div class="card-content">
+                    <div class="chart-container">
+                        <canvas id="ageChart"></canvas>
+                    </div>
+                    <div class="insight-box" style="background-color: #FFFBEB;">
+                        <h4>Key Insight:</h4>
+                        <p>The 60-69 age group represents the largest segment (63.6%), indicating that the program is primarily serving older immigrants who may have specific integration needs.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Familiarity Levels -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Familiarity with Immigration Process</h2>
+                </div>
+                <div class="card-content">
+                    <div class="chart-container">
+                        <canvas id="familiarityChart"></canvas>
+                    </div>
+                    <div class="insight-box" style="background-color: #ECFDF5;">
+                        <h4>Key Insight:</h4>
+                        <p>36.4% of participants are very familiar with immigration processes, while 36.4% have little to no familiarity, indicating a need for different levels of support.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Goals Distribution -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Participant Program Goals</h2>
+                </div>
+                <div class="card-content">
+                    <div class="chart-container">
+                        <canvas id="goalsChart"></canvas>
+                    </div>
+                    <div class="insight-box" style="background-color: #FEF3F2;">
+                        <h4>Key Insight:</h4>
+                        <p>Most participants (63.6%) are seeking to improve their insights about integration, rather than just basic knowledge, suggesting they need deeper cultural understanding.</p>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Executive Summary -->
+            <div class="card full-width">
+                <div class="card-header">
+                    <h2 class="card-title">Executive Summary</h2>
+                </div>
+                <div class="card-content">
+                    <div class="summary-grid">
+                        <div class="summary-box">
+                            <h4>Demographic Profile</h4>
+                            <p>Primarily older immigrants (avg. age 61.7), with 72.7% female participants, suggesting age-appropriate integration support is needed.</p>
+                        </div>
+                        <div class="summary-box" style="background-color: #FFFBEB;">
+                            <h4>Knowledge & Skills Gap</h4>
+                            <p>27.3% seek practical skills development, especially those with lower familiarity with immigration processes.</p>
+                        </div>
+                        <div class="summary-box" style="background-color: #ECFDF5;">
+                            <h4>Key Recommendation</h4>
+                            <p>Implement multi-level approach with peer support structure to address varying experience levels and build community.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Week data configurations - these would change based on week selected
+        const weekData = {
+            // Week 1 data matching our current analysis
+            1: {
+                gender: {
+                    labels: ['Female', 'Male'],
+                    data: [72.7, 27.3]
+                },
+                ageGroups: {
+                    labels: ['40s', '50s', '60s', '70s+'],
+                    data: [9.1, 18.2, 63.6, 9.1]
+                },
+                familiarity: {
+                    labels: ['No familiarity', 'A bit', 'Intermediate', 'Very familiar'],
+                    data: [9.1, 27.3, 27.3, 36.4]
+                },
+                goals: {
+                    labels: ['Improve Insight', 'Basic Knowledge + Insight', 'Develop Practical Skills', 'Other'],
+                    data: [54.5, 9.1, 27.3, 9.1]
+                }
+            },
+            // Sample data for Weeks 2-6 (you can adjust these later)
+            2: {
+                gender: {
+                    labels: ['Female', 'Male'],
+                    data: [77, 23]
+                },
+                ageGroups: {
+                    labels: ['40s', '50s', '60s', '70s+'],
+                    data: [10, 20, 60, 10]
+                },
+                familiarity: {
+                    labels: ['No familiarity', 'A bit', 'Intermediate', 'Very familiar', 'Extremely Familiar'],
+                    data: [0, 10, 40, 40,10]
+                },
+                goals: {
+                    labels: ['Improve Insight', 'Basic Knowledge', 'Develop Practical Skills', 'Other'],
+                    data: [25, 50, 17, 8]
+                }
+            },
+            3: {
+                gender: {
+                    labels: ['Female', 'Male'],
+                    data: [82, 18]
+                },
+                ageGroups: {
+                    labels: ['40s', '50s', '60s', '70s+'],
+                    data: [12, 18, 60, 10]
+                },
+                familiarity: {
+                    labels: ['No familiarity', 'A bit', 'Intermediate', 'Very familiar', 'Extremely Familiar'],
+                    data: [0, 27, 27, 27,19]
+                },
+                goals: {
+                    labels: ['Improve Insight', 'Basic Knowledge + Insight', 'Develop Practical Skills', 'Other'],
+                    data: [31, 23, 31, 15]
+                }
+            },
+            4: {
+                gender: {
+                    labels: ['Female', 'Male'],
+                    data: [67, 33]
+                },
+                ageGroups: {
+                    labels: ['40s', '50s', '60s', '70s+'],
+                    data: [15, 15, 55, 15]
+                },
+                familiarity: {
+                    labels: ['No familiarity', 'A bit', 'Intermediate', 'Very familiar', 'Extremely Familiar'],
+                    data: [0, 0, 89, 0,11]
+                },
+                goals: {
+                    labels: ['Improve Insight', 'Basic Knowledge + Insight', 'Develop Practical Skills', 'Other'],
+                    data: [0, 44, 44, 11]
+                }
+            },
+            5: {
+                gender: {
+                    labels: ['Female', 'Male'],
+                    data: [75, 25]
+                },
+                ageGroups: {
+                    labels: ['40s', '50s', '60s', '70s+'],
+                    data: [10, 25, 55, 10]
+                },
+                familiarity: {
+                    labels: ['No familiarity', 'A bit', 'Intermediate', 'Very familiar', 'Extremely Familiar'],
+                    data: [8, 8, 58, 17,8]
+                },
+                goals: {
+                    labels: ['Improve Insight', 'Basic Knowledge + Insight', 'Develop Practical Skills', 'Other'],
+                    data: [33, 42, 25, 0]
+                }
+            },
+            6: {
+                gender: {
+                    labels: ['Female', 'Male'],
+                    data: [80, 20]
+                },
+                ageGroups: {
+                    labels: ['40s', '50s', '60s', '70s+'],
+                    data: [15, 20, 55, 10]
+                },
+                familiarity: {
+                    labels: ['No familiarity', 'A bit', 'Intermediate', 'Very familiar', 'Emtremely Familiar'],
+                    data: [0, 10, 60, 10, 20]
+                },
+                goals: {
+                    labels: ['Improve Insight', 'Basic Knowledge + Insight', 'Develop Practical Skills', 'Other'],
+                    data: [20, 40, 20, 20]
+                }
+            }
+        };
+
+        // Chart objects
+        let genderChart, ageChart, familiarityChart, goalsChart, familiarityGoalsChart;
+
+        // Initial setup
+        function initializeCharts() {
+            // Gender Distribution Chart
+            const genderCtx = document.getElementById('genderChart').getContext('2d');
+            genderChart = new Chart(genderCtx, {
+                type: 'pie',
+                data: {
+                    labels: weekData[1].gender.labels,
+                    datasets: [{
+                        data: weekData[1].gender.data,
+                        backgroundColor: ['#EF4444','#60A5FA']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Age Distribution Chart
+            const ageCtx = document.getElementById('ageChart').getContext('2d');
+            ageChart = new Chart(ageCtx, {
+                type: 'bar',
+                data: {
+                    labels: weekData[1].ageGroups.labels,
+                    datasets: [{
+                        data: weekData[1].ageGroups.data,
+                        backgroundColor: ['#EF4444','#60A5FA','#FBBF24', '#34D399']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Percentage of Participants'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Age Groups'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // Familiarity Chart
+            const familiarityCtx = document.getElementById('familiarityChart').getContext('2d');
+            familiarityChart = new Chart(familiarityCtx, {
+                type: 'pie',
+                data: {
+                    labels: weekData[1].familiarity.labels,
+                    datasets: [{
+                        data: weekData[1].familiarity.data,
+                        backgroundColor: ['#EF4444','#60A5FA','#FBBF24', '#34D399']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Goals Chart
+            const goalsCtx = document.getElementById('goalsChart').getContext('2d');
+            goalsChart = new Chart(goalsCtx, {
+                type: 'pie',
+                data: {
+                    labels: weekData[1].goals.labels,
+                    datasets: [{
+                        data: weekData[1].goals.data,
+                        backgroundColor: ['#EF4444','#60A5FA','#FBBF24', '#34D399']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Familiarity vs Goals Chart
+            const famGoalsCtx = document.getElementById('familiarityGoalsChart').getContext('2d');
+            familiarityGoalsChart = new Chart(famGoalsCtx, {
+                type: 'bar',
+                data: {
+                    labels: weekData[1].familiarityGoals.labels,
+                    datasets: [
+                        {
+                            label: 'Improve Insight',
+                            data: weekData[1].familiarityGoals.datasets[0].data,
+                            backgroundColor: '#EF4444'
+                        },
+                        {
+                            label: 'Basic Knowledge + Insight',
+                            data: weekData[1].familiarityGoals.datasets[1].data,
+                            backgroundColor: '#60A5FA'
+                        },
+                        {
+                            label: 'Develop Practical Skills',
+                            data: weekData[1].familiarityGoals.datasets[2].data,
+                            backgroundColor: '#FBBF24'
+                        },
+                        {
+                            label: 'Other',
+                            data: weekData[1].familiarityGoals.datasets[3].data,
+                            backgroundColor: '#34D399'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Percentage of Participants'
+                            },
+                            max: 100
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Familiarity Level'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update dashboard based on selected week
+        function updateDashboard() {
+            const selectedWeek = document.getElementById('weekSelect').value;
+            const data = weekData[selectedWeek];
+            
+            // Update Gender Chart
+            genderChart.data.labels = data.gender.labels;
+            genderChart.data.datasets[0].data = data.gender.data;
+            genderChart.update();
+            
+            // Update Age Chart
+            ageChart.data.labels = data.ageGroups.labels;
+            ageChart.data.datasets[0].data = data.ageGroups.data;
+            ageChart.update();
+            
+            // Update Familiarity Chart
+            familiarityChart.data.labels = data.familiarity.labels;
+            familiarityChart.data.datasets[0].data = data.familiarity.data;
+            familiarityChart.update();
+            
+            // Update Goals Chart
+            goalsChart.data.labels = data.goals.labels;
+            goalsChart.data.datasets[0].data = data.goals.data;
+            goalsChart.update();
+            
+            // Update Familiarity vs Goals Chart
+            familiarityGoalsChart.data.labels = data.familiarityGoals.labels;
+            for (let i = 0; i < data.familiarityGoals.datasets.length; i++) {
+                familiarityGoalsChart.data.datasets[i].data = data.familiarityGoals.datasets[i].data;
+            }
+            familiarityGoalsChart.update();
+        }
+
+        // Initialize the charts when the page loads
+        window.onload = function() {
+            initializeCharts();
+        };
+    </script>
+</body>
+</html>
